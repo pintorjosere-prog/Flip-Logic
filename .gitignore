@@ -1,0 +1,11 @@
+# Windows / OneDrive leftovers
+desktop.ini
+Thumbs.db
+
+# Local settings and scratch output
+settings.json
+*.log
+*.tmp
+
+# Internal planning notes (kept on disk, not published)
+docs/superpowers/

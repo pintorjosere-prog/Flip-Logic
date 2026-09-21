@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flip Logic</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F9FAFB;
+      --surface: #FFFFFF;
+      --surface2: #F3F4F6;
+      --border: #E5E7EB;
+      --border-light: #D1D5DB;
+      --text: #1F2937;
+      --text-dim: #6B7280;
+      --text-muted: #9CA3AF;
+      --accent: #D4AF37;
+      --accent-dim: rgba(212,175,55,0.08);
+      --accent-border: rgba(212,175,55,0.25);
+      --primary: #1A3A52;
+      --primary-dim: rgba(26,58,82,0.05);
+      --primary-border: rgba(26,58,82,0.15);
+      --green: #22C55E;
+      --green-dim: rgba(34,197,94,0.08);
+      --green-border: rgba(34,197,94,0.2);
+      --red: #EF4444;
+      --red-dim: rgba(239,68,68,0.08);
+      --red-border: rgba(239,68,68,0.2);
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    input[type=number] { -moz-appearance: textfield; }
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+    /* ===== HEADER ===== */
+    #header {
+      background: linear-gradient(135deg, var(--primary) 0%, #0F2744 100%);
+      border-bottom: 3px solid var(--accent);
+      padding: 28px 24px;
+      box-shadow: 0 2px 8px rgba(26,58,82,0.1);
+    }
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(212,175,55,0.2);
+    }
+    .brand h1 {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #FFFFFF;
+      line-height: 1;
+    }
+    .brand h1 span { color: var(--accent); font-weight: 900; }
+
+    .btn-export {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-export:hover { background: var(--border); color: #fff; }
+
+    /* Address input in header */
+    .address-input {
+      flex: 1;
+      max-width: 380px;
+      min-width: 180px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .address-input::placeholder { color: var(--text-muted); font-weight: 500; }
+    .address-input:focus { border-color: var(--accent); }
+
+    /* Slogan */
+    .slogan {
+      font-size: 15px;
+      color: rgba(255,255,255,0.75);
+      font-weight: 500;
+      font-style: italic;
+      letter-spacing: 0.02em;
+      margin-bottom: 16px;
+      padding-left: 60px;
+    }
+
+    /* Agent bar */
+    .agent-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(249,250,251,0.95) 100%);
+      border: 1px solid var(--accent-border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      box-shadow: 0 1px 4px rgba(26,58,82,0.08);
+    }
+    .agent-bar .headshot {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent-border);
+      flex-shrink: 0;
+    }
+    .agent-info { flex: 1; min-width: 0; }
+    .agent-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: -0.01em;
+    }
+    .agent-title {
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 600;
+      margin-top: 1px;
+    }
+    .agent-contact {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+    .agent-contact a,
+    .agent-contact button {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 600;
+      transition: color 0.2s;
+      letter-spacing: -0.01em;
+      background: none;
+      border: 0;
+      padding: 0;
+      margin: 0;
+      font-family: inherit;
+      text-align: right;
+      cursor: pointer;
+    }
+    .agent-contact a:hover,
+    .agent-contact button:hover { color: var(--accent); }
+    .agent-contact .phone { color: #000; font-size: 17px; font-weight: 700; }
+
+    /* ===== MAIN ===== */
+    #app {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 16px 80px;
+    }
+
+    /* ===== CARDS ===== */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(26,58,82,0.05);
+    }
+    .card-title {
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      color: var(--primary);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--accent-border);
+    }
+
+    /* ===== INPUTS ===== */
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    @media (min-width: 600px) {
+      .input-grid { grid-template-columns: 1fr 1fr; gap: 16px 24px; }
+    }
+    @media (min-width: 900px) {
+      .input-grid { grid-template-columns: 1fr 1fr 1fr; }
+    }
+
+    .input-group { display: flex; flex-direction: column; gap: 6px; }
+    .input-group label {
+      color: var(--text-dim);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .input-wrap {
+      display: flex;
+      align-items: center;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .input-wrap:focus-within { border-color: var(--accent); }
+    .input-prefix, .input-suffix {
+      padding: 0 12px;
+      color: var(--accent);
+      font-size: 15px;
+      font-weight: 700;
+      background: var(--surface2);
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .input-suffix { font-size: 14px; }
+    .input-wrap input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 14px 12px;
+      color: var(--text);
+      font-size: 17px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      min-width: 0;
+    }
+    .input-wrap input.pct-input {
+      max-width: 70px;
+      text-align: center;
+      font-size: 15px;
+    }
+    .auto-badge {
+      display: inline-block;
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    /* ===== STAT GRID ===== */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    @media (min-width: 500px) {
+      .stat-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (min-width: 900px) {
+      .stat-grid { grid-template-columns: 1fr 1fr 1fr; }
+    }
+    .stat-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 18px;
+    }
+    .stat-box.highlight {
+      background: var(--accent-dim);
+      border-color: var(--accent-border);
+    }
+    .stat-label {
+      color: var(--text-dim);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text);
+    }
+    .stat-value.gold { color: var(--accent); }
+    .stat-value.red { color: var(--red); }
+    .stat-sub { color: var(--text-muted); font-size: 11px; margin-top: 4px; font-weight: 500; }
+
+    /* ===== TABLE ===== */
+    table { width: 100%; border-collapse: collapse; font-size: 14px; font-family: 'JetBrains Mono', monospace; }
+    thead tr { border-bottom: 1px solid var(--border); }
+    th {
+      padding: 10px 14px;
+      text-align: right;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: var(--surface2); }
+    tbody tr.highlight-row { background: var(--accent-dim); }
+    td { padding: 12px 14px; text-align: right; }
+    td.month-cell { color: var(--text-dim); }
+    td.month-cell.gold { color: var(--accent); font-weight: 700; }
+    td.hold { color: var(--red); opacity: 0.8; }
+    td.cost { color: var(--text); }
+    td.profit-pos { color: var(--green); font-weight: 700; }
+    td.profit-neg { color: var(--red); font-weight: 700; }
+    td.roi-pos { color: var(--green); }
+    td.roi-neg { color: var(--red); }
+
+    /* ===== TWO COL ===== */
+    .two-col { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px; }
+    @media (min-width: 700px) { .two-col { grid-template-columns: 1fr 1fr; } }
+
+    /* ===== PROFIT ROWS ===== */
+    .profit-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 10px;
+    }
+    .profit-row.pos { background: var(--green-dim); border: 1px solid var(--green-border); }
+    .profit-row.neg { background: var(--red-dim); border: 1px solid var(--red-border); }
+    .profit-row span { color: var(--text-dim); font-size: 14px; font-weight: 600; }
+    .profit-amount { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 18px; }
+    .profit-amount.pos { color: var(--green); }
+    .profit-amount.neg { color: var(--red); }
+    .profit-roi { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+
+    /* ===== INDICATORS ===== */
+    .indicator {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 10px;
+    }
+    .indicator.pass { background: var(--green-dim); border: 1px solid var(--green-border); }
+    .indicator.fail { background: var(--red-dim); border: 1px solid var(--red-border); }
+    .indicator-left { display: flex; align-items: center; gap: 10px; }
+    .indicator-label { color: var(--text-dim); font-size: 13px; font-weight: 600; max-width: 240px; line-height: 1.4; }
+    .indicator-value { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 700; }
+    .indicator-value.pass { color: var(--green); }
+    .indicator-value.fail { color: var(--red); }
+
+    /* ===== COST SUMMARY ===== */
+    .cost-summary {
+      margin-top: 20px;
+      padding: 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+    .cost-summary-title {
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 10px;
+    }
+    .cost-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .cost-row:last-child { border-bottom: none; }
+    .cost-row span:first-child { color: var(--text-dim); font-weight: 500; }
+    .cost-row span:last-child { font-family: 'JetBrains Mono', monospace; color: var(--text); font-weight: 600; }
+
+    /* ===== 75% VERDICT ===== */
+    .deal-verdict {
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .deal-verdict.great-deal {
+      background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+      border: 1px solid var(--green-border);
+    }
+    .deal-verdict.bad-deal {
+      background: linear-gradient(135deg, #fef2f2 0%, #fff1f2 100%);
+      border: 1px solid var(--red-border);
+    }
+    .deal-verdict .verdict-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .verdict-icon { font-size: 32px; line-height: 1; flex-shrink: 0; margin-top: 2px; }
+    .verdict-title { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+    .deal-verdict.great-deal .verdict-title { color: var(--green); }
+    .deal-verdict.bad-deal .verdict-title { color: var(--red); }
+    .verdict-sub { color: var(--text-dim); font-size: 14px; margin-top: 4px; line-height: 1.5; font-weight: 500; }
+    .verdict-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (min-width: 700px) {
+      .verdict-grid { grid-template-columns: 1fr 1fr 1fr 1fr; }
+    }
+    .verdict-stat {
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+    }
+    .verdict-stat-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .verdict-stat-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .verdict-stat-value.gold { color: var(--accent); }
+    .verdict-stat-value.green { color: var(--green); }
+    .verdict-stat-value.red { color: var(--red); }
+    .verdict-stat-sub { font-size: 10px; color: var(--text-muted); margin-top: 3px; font-weight: 500; }
+
+    /* ===== MOBILE TWEAKS ===== */
+    @media (max-width: 600px) {
+      #header { padding: 20px 16px; }
+      .brand h1 { font-size: 22px; }
+      .slogan { padding-left: 0; font-size: 13px; }
+      .address-input { max-width: 100%; font-size: 14px; }
+      .agent-bar { flex-wrap: wrap; padding: 14px 16px; }
+      .agent-contact { align-items: flex-start; width: 100%; margin-top: 8px; padding-top: 10px; border-top: 1px solid var(--border); }
+      .agent-contact .phone { font-size: 16px; }
+      .agent-contact a,
+      .agent-contact button { font-size: 14px; text-align: left; }
+      .card { padding: 20px 16px; }
+      .stat-value { font-size: 20px; }
+      .verdict-stat-value { font-size: 18px; }
+      .verdict-title { font-size: 18px; }
+      .profit-amount { font-size: 16px; }
+      th, td { padding: 10px 8px; font-size: 12px; }
+    }
+
+    /* ===== PRINT ===== */
+    @media print {
+      body { background: #fff; color: #1a1a1a; }
+      :root {
+        --bg: #fff;
+        --surface: #fff;
+        --surface2: #f5f5f5;
+        --border: #ddd;
+        --border-light: #ccc;
+        --text: #1a1a1a;
+        --text-dim: #666;
+        --text-muted: #999;
+      }
+      #header { background: #fff !important; border-bottom: 2px solid #D4AF37; }
+      .btn-export { display: none; }
+      .address-input { border: none; background: transparent; padding: 0; font-weight: 700; color: #1a1a1a; }
+      .slogan { color: rgba(0,0,0,0.35) !important; }
+      .agent-bar { background: #f5f5f5 !important; border-color: #ddd !important; }
+      .card { break-inside: avoid; page-break-inside: avoid; border-color: #ddd; }
+      .deal-verdict { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .indicator { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .profit-row { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .stat-box.highlight { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      #app { padding: 16px; }
+      .stat-value, .verdict-stat-value, .profit-amount, .indicator-value { color: #1a1a1a !important; }
+      .stat-value.gold, .verdict-stat-value.gold { color: #b8960f !important; }
+      .stat-value.red, .verdict-stat-value.red, .profit-amount.neg, .indicator-value.fail { color: #c0392b !important; }
+      .profit-amount.pos, .indicator-value.pass, .verdict-stat-value.green { color: #1a8a6a !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="header">
+    <div class="header-inner">
+      <div class="header-top">
+        <div class="brand">
+          <div class="brand-icon" style="background: var(--primary)">
+  <svg aria-hidden="true" focusable="false" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" width="26" height="26">
+    <!-- Ascending trend line -->
+    <polyline
+      points="5,35 14,26 23,29 36,15"
+      stroke="#D4AF37"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <!-- Arrow head pointing up-right -->
+    <polyline
+      points="28,11 36,15 32,23"
+      stroke="#D4AF37"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+</div>
+          <h1>Flip <span>Logic</span></h1>
+        </div>
+        <input type="text" class="address-input" id="propertyAddress" placeholder="Enter property address..." />
+        <button class="btn-export" onclick="window.print()">Export / Print</button>
+      </div>
+      <div class="slogan">Run the numbers. Win the deal.</div>
+      <div class="agent-bar">
+        <img class="headshot" src="data:image/jpeg;base64,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" alt="Jose Pintor" />
+        <div class="agent-info">
+          <div class="agent-name">Jose Pintor</div>
+          <div class="agent-title">Investor · RE Agent · eXp Realty</div>
+        </div>
+        <div class="agent-contact">
+          <button type="button" class="phone" onclick="showPhone()">(636) 675-7113</button>
+          <button type="button" onclick="composeEmail()">jose.pintormendoza@exprealty.com</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="app">
+
+    <!-- 75% Rule Verdict -->
+    <div id="dealVerdict" class="deal-verdict great-deal"></div>
+
+    <!-- Deal Inputs -->
+    <div class="card">
+      <div class="card-title">Deal Inputs</div>
+      <div class="input-grid">
+        <div class="input-group">
+          <label>Purchase Price</label>
+          <div class="input-wrap"><div class="input-prefix">$</div><input type="number" id="purchasePrice" value="207000" step="1000" oninput="recalc()" /></div>
+        </div>
+        <div class="input-group">
+          <label>Rehab Budget</label>
+          <div class="input-wrap"><div class="input-prefix">$</div><input type="number" id="rehabBudget" value="81490" step="1000" oninput="recalc()" /></div>
+        </div>
+        <div class="input-group">
+          <label>After Repair Value (ARV)</label>
+          <div class="input-wrap"><div class="input-prefix">$</div><input type="number" id="arv" value="390000" step="1000" oninput="recalc()" /></div>
+        </div>
+        <div class="input-group">
+          <label>Insurance (monthly)</label>
+          <div class="input-wrap"><div class="input-prefix">$</div><input type="number" id="insurance" value="195" step="25" oninput="recalc()" /></div>
+        </div>
+        <div class="input-group">
+          <label>Property Taxes (monthly)</label>
+          <div class="input-wrap"><div class="input-prefix">$</div><input type="number" id="taxes" value="650" step="50" oninput="recalc()" /></div>
+        </div>
+        <div class="input-group">
+          <label id="closingBuyLabel">Closing Costs Buy <span class="auto-badge">AUTO</span></label>
+          <div class="input-wrap">
+            <div class="input-prefix">$</div>
+            <input type="number" id="closingCostsBuy" value="0" step="500" oninput="onClosingBuyEdit()" />
+            <input type="number" class="pct-input" id="closingBuyPct" value="3.5" step="0.25" min="0" max="20" oninput="onClosingBuyPctChange()" />
+            <div class="input-suffix">%</div>
+          </div>
+        </div>
+        <div class="input-group">
+          <label id="downPaymentLabel">Down Payment (default 5%)</label>
+          <div class="input-wrap"><div class="input-prefix">$</div><input type="number" id="downPayment" value="10350" step="1000" oninput="onDownPaymentEdit()" /></div>
+        </div>
+        <div class="input-group">
+          <label>Earnest Money Deposit (EMD)</label>
+          <div class="input-wrap"><div class="input-prefix">$</div><input type="number" id="emd" value="5000" step="500" oninput="recalc()" /></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rate Overrides -->
+    <div class="card">
+      <div class="card-title">Rate Settings</div>
+      <div class="input-grid">
+        <div class="input-group">
+          <label>Closing / Origination Fees</label>
+          <div class="input-wrap">
+            <input type="number" class="pct-input" id="originationRate" value="4.25" step="0.25" min="0" max="20" oninput="recalc()" style="max-width:100px;" />
+            <div class="input-suffix">%</div>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Interest Rate (Annual)</label>
+          <div class="input-wrap">
+            <input type="number" class="pct-input" id="interestRate" value="12" step="0.5" min="0" max="30" oninput="recalc()" style="max-width:100px;" />
+            <div class="input-suffix">%</div>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Seller Commission</label>
+          <div class="input-wrap">
+            <input type="number" class="pct-input" id="commissionRate" value="6" step="0.5" min="0" max="15" oninput="recalc()" style="max-width:100px;" />
+            <div class="input-suffix">%</div>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Closing Costs Sell (% of ARV)</label>
+          <div class="input-wrap">
+            <input type="number" class="pct-input" id="closingSellPct" value="1" step="0.25" min="0" max="10" oninput="recalc()" style="max-width:100px;" />
+            <div class="input-suffix">%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loan Breakdown -->
+    <div class="card">
+      <div class="card-title">Hard Money Loan Breakdown</div>
+      <div class="stat-grid" id="loanStats"></div>
+    </div>
+
+    <!-- 12-Month Schedule -->
+    <div class="card">
+      <div class="card-title">12-Month Amortization Schedule</div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>Monthly Holding</th>
+              <th>Cumulative Holding</th>
+              <th>Total Costs</th>
+              <th>Net Profit</th>
+              <th>ROI</th>
+            </tr>
+          </thead>
+          <tbody id="scheduleBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bottom two columns -->
+    <div class="two-col">
+      <div class="card" style="margin-bottom:0;">
+        <div class="card-title">Projected Net Profit</div>
+        <div id="profitSummary"></div>
+      </div>
+      <div class="card" style="margin-bottom:0;">
+        <div class="card-title">Key Deal Indicators</div>
+        <div id="indicators"></div>
+        <div class="cost-summary">
+          <div class="cost-summary-title">Cost Summary</div>
+          <div id="costSummary"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function showPhone() {
+      alert('Jose Pintor\nInvestor · RE Agent · eXp Realty\n\n(636) 675-7113');
+    }
+
+    function composeEmail() {
+      window.open('https://mail.google.com/mail/?authuser=pintorjose.re@gmail.com&view=cm&fs=1&to=jose.pintormendoza@exprealty.com&su=Flip%20Logic%20Analysis', '_blank', 'noopener');
+    }
+
+    const MONTHS = 12;
+    let downPaymentManuallyEdited = false;
+    let closingBuyManuallyEdited = false;
+
+    function fmt(n) {
+      const abs = Math.abs(n);
+      const str = '$' + abs.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      return n < 0 ? '(' + str + ')' : str;
+    }
+    function fmtPct(n) { return (n * 100).toFixed(2) + '%'; }
+    function val(id) { return parseFloat(document.getElementById(id).value) || 0; }
+
+    function onDownPaymentEdit() { downPaymentManuallyEdited = true; recalc(); }
+    function onClosingBuyEdit() {
+      closingBuyManuallyEdited = true;
+      document.querySelector('#closingBuyLabel .auto-badge').textContent = 'MANUAL';
+      recalc();
+    }
+    function onClosingBuyPctChange() {
+      closingBuyManuallyEdited = false;
+      document.querySelector('#closingBuyLabel .auto-badge').textContent = 'AUTO';
+      recalc();
+    }
+
+    function recalc() {
+      const purchasePrice = val('purchasePrice');
+      const rehabBudget = val('rehabBudget');
+      const arv = val('arv');
+      const insurance = val('insurance');
+      const taxes = val('taxes');
+      const emd = val('emd');
+
+      const ORIGINATION_RATE = val('originationRate') / 100;
+      const INTEREST_RATE = val('interestRate') / 100;
+      const COMMISSION_RATE = val('commissionRate') / 100;
+      const CLOSING_SELL_PCT = val('closingSellPct') / 100;
+      const CLOSING_BUY_PCT = val('closingBuyPct') / 100;
+
+      if (!closingBuyManuallyEdited) {
+        document.getElementById('closingCostsBuy').value = Math.round(purchasePrice * CLOSING_BUY_PCT);
+      }
+      const closingCostsBuy = val('closingCostsBuy');
+
+      if (!downPaymentManuallyEdited) {
+        document.getElementById('downPayment').value = Math.round(purchasePrice * 0.05);
+      }
+      const downPayment = val('downPayment');
+      document.getElementById('downPaymentLabel').textContent =
+        'Down Payment (default 5% = ' + fmt(Math.round(purchasePrice * 0.05)) + ')';
+
+      const loanAmount = Math.max(0, purchasePrice + rehabBudget - downPayment - emd);
+      const originationFee = loanAmount * ORIGINATION_RATE;
+      const monthlyInterest = (loanAmount * INTEREST_RATE) / 12;
+      const sellerCommission = arv * COMMISSION_RATE;
+      const closingCostsSell = arv * CLOSING_SELL_PCT;
+      const totalCashInvested = downPayment + emd + closingCostsBuy;
+      const fixedCosts = downPayment + emd + loanAmount + originationFee + closingCostsBuy + closingCostsSell + sellerCommission;
+      const monthlyHolding = monthlyInterest + insurance + taxes;
+
+      const schedule = Array.from({ length: MONTHS }, (_, i) => {
+        const months = i + 1;
+        const holdingTotal = monthlyHolding * months;
+        const totalCosts = fixedCosts + holdingTotal;
+        const netProfit = arv - totalCosts;
+        const roi = totalCashInvested > 0 ? netProfit / totalCashInvested : 0;
+        return { months, holdingTotal, totalCosts, netProfit, roi, monthlyHolding };
+      });
+
+      // --- 75% Rule ---
+      const allInCosts = purchasePrice + rehabBudget;
+      const arvPct = arv > 0 ? allInCosts / arv : 0;
+      const maxOfferAt75 = Math.max(0, (arv * 0.75) - rehabBudget);
+      const isGoodDeal = arvPct <= 0.75;
+      const spreadToTarget = maxOfferAt75 - purchasePrice;
+
+      const verdictEl = document.getElementById('dealVerdict');
+      verdictEl.className = 'deal-verdict ' + (isGoodDeal ? 'great-deal' : 'bad-deal');
+      verdictEl.innerHTML = `
+        <div class="verdict-header">
+          <div class="verdict-icon">${isGoodDeal ? '🟢' : '🔴'}</div>
+          <div>
+            <div class="verdict-title">${isGoodDeal ? '75% RULE — DEAL PASSES' : '75% RULE — OVER TARGET'}</div>
+            <div class="verdict-sub">${isGoodDeal
+              ? 'All-in costs are at or below 75% of ARV. This deal meets your threshold.'
+              : 'All-in costs exceed 75% of ARV. Reduce purchase price or rehab to qualify.'}</div>
+          </div>
+        </div>
+        <div class="verdict-grid">
+          <div class="verdict-stat">
+            <div class="verdict-stat-label">All-In (Purchase + Rehab)</div>
+            <div class="verdict-stat-value">${fmt(allInCosts)}</div>
+          </div>
+          <div class="verdict-stat">
+            <div class="verdict-stat-label">% of ARV</div>
+            <div class="verdict-stat-value ${arvPct <= 0.75 ? 'green' : 'red'}">${(arvPct * 100).toFixed(1)}%</div>
+            <div class="verdict-stat-sub">Target: ≤ 75%</div>
+          </div>
+          <div class="verdict-stat">
+            <div class="verdict-stat-label">Max Offer @ 75% Rule</div>
+            <div class="verdict-stat-value gold">${fmt(maxOfferAt75)}</div>
+            <div class="verdict-stat-sub">ARV × 0.75 − Rehab</div>
+          </div>
+          <div class="verdict-stat">
+            <div class="verdict-stat-label">${spreadToTarget >= 0 ? 'Room Below Max Offer' : 'Over Max Offer By'}</div>
+            <div class="verdict-stat-value ${spreadToTarget >= 0 ? 'green' : 'red'}">${fmt(Math.abs(spreadToTarget))}</div>
+            <div class="verdict-stat-sub">${spreadToTarget >= 0 ? 'Under budget' : 'Needs reduction'}</div>
+          </div>
+        </div>`;
+
+      // --- Loan Stats ---
+      const loanStats = [
+        { label: 'Down Payment', value: fmt(downPayment), sub: 'Out of pocket', cls: '' },
+        { label: 'EMD', value: fmt(emd), sub: 'Subtracted from loan', cls: '' },
+        { label: 'Loan Amount (after down + EMD)', value: fmt(loanAmount), sub: 'Financed amount', cls: '' },
+        { label: `Closing / Orig Fees (${val('originationRate')}%)`, value: fmt(originationFee), sub: 'On loan amount', cls: 'red' },
+        { label: `Monthly Interest (${val('interestRate')}%)`, value: fmt(monthlyInterest), sub: 'Interest-only', cls: 'red' },
+        { label: `Seller Commission (${val('commissionRate')}%)`, value: fmt(sellerCommission), sub: 'On ARV', cls: 'red' },
+        { label: 'Total Cash Out of Pocket', value: fmt(totalCashInvested), sub: 'Down + EMD + Buy Closing Costs', cls: 'gold', highlight: true },
+        { label: '3-Month All-In Carry Cost', value: fmt(monthlyHolding * 3 + originationFee), sub: 'Holding (3 mo) + Orig Fee', cls: 'red', highlight: true },
+        { label: '6-Month All-In Carry Cost', value: fmt(monthlyHolding * 6 + originationFee), sub: 'Holding (6 mo) + Orig Fee', cls: 'red', highlight: true },
+      ];
+      document.getElementById('loanStats').innerHTML = loanStats.map(s => `
+        <div class="stat-box ${s.highlight ? 'highlight' : ''}">
+          <div class="stat-label">${s.label}</div>
+          <div class="stat-value ${s.cls}">${s.value}</div>
+          ${s.sub ? `<div class="stat-sub">${s.sub}</div>` : ''}
+        </div>`).join('');
+
+      // --- Schedule ---
+      document.getElementById('scheduleBody').innerHTML = schedule.map(({ months, holdingTotal, totalCosts, netProfit, roi, monthlyHolding: mh }) => {
+        const isHighlight = months === 6 || months === 12;
+        const isGood = netProfit >= 0;
+        return `
+          <tr class="${isHighlight ? 'highlight-row' : ''}">
+            <td class="month-cell ${isHighlight ? 'gold' : ''}">${months}${isHighlight ? ' ★' : ''}</td>
+            <td class="hold">${fmt(mh)}</td>
+            <td class="hold">${fmt(holdingTotal)}</td>
+            <td class="cost">${fmt(totalCosts)}</td>
+            <td class="${isGood ? 'profit-pos' : 'profit-neg'}">${fmt(netProfit)}</td>
+            <td class="${isGood ? 'roi-pos' : 'roi-neg'}">${fmtPct(roi)}</td>
+          </tr>`;
+      }).join('');
+
+      // --- Profit Summary ---
+      document.getElementById('profitSummary').innerHTML = [3, 6, 9, 12].map(m => {
+        const s = schedule[m - 1];
+        const pos = s.netProfit >= 0;
+        return `
+          <div class="profit-row ${pos ? 'pos' : 'neg'}">
+            <span>${m} months</span>
+            <div style="text-align:right;">
+              <div class="profit-amount ${pos ? 'pos' : 'neg'}">${fmt(s.netProfit)}</div>
+              <div class="profit-roi">${fmtPct(s.roi)} ROI</div>
+            </div>
+          </div>`;
+      }).join('');
+
+      // --- Indicators ---
+      const sixMonth = schedule[5];
+      const target = schedule[11];
+      const indicators = [
+        { label: '75% Rule (Purchase + Rehab ≤ 75% ARV)', pass: isGoodDeal, detail: (arvPct * 100).toFixed(1) + '%' },
+        { label: 'Break-even at 12 months', pass: target.netProfit >= -5000, detail: fmt(target.netProfit) },
+        { label: 'ROI > 15% at 6 months', pass: sixMonth.roi > 0.15, detail: fmtPct(sixMonth.roi) },
+        { label: '6-mo profit ≥ 50% of rehab', pass: sixMonth.netProfit >= rehabBudget * 0.5, detail: sixMonth.netProfit > 0 ? fmtPct(sixMonth.netProfit / rehabBudget) : 'N/A' },
+      ];
+      document.getElementById('indicators').innerHTML = indicators.map(ind => `
+        <div class="indicator ${ind.pass ? 'pass' : 'fail'}">
+          <div class="indicator-left">
+            <div style="font-size:18px;">${ind.pass ? '✅' : '❌'}</div>
+            <div class="indicator-label">${ind.label}</div>
+          </div>
+          <div class="indicator-value ${ind.pass ? 'pass' : 'fail'}">${ind.detail}</div>
+        </div>`).join('');
+
+      // --- Cost Summary ---
+      const rows = [
+        ['Purchase Price', fmt(purchasePrice)],
+        ['Down Payment', fmt(downPayment)],
+        ['EMD (Earnest Money)', fmt(emd)],
+        ['Loan Amount (financed)', fmt(loanAmount)],
+        ['Rehab Budget', fmt(rehabBudget)],
+        [`Closing / Orig Fees (${val('originationRate')}%)`, fmt(originationFee)],
+        [`Buy Closing Costs (${val('closingBuyPct')}%)`, fmt(closingCostsBuy)],
+        [`Commission on ARV (${val('commissionRate')}%)`, fmt(sellerCommission)],
+        [`Sell Closing Costs (${val('closingSellPct')}%)`, fmt(closingCostsSell)],
+        ['Monthly Holding Cost', fmt(monthlyHolding) + '/mo'],
+        ['Total Cash Out of Pocket', fmt(totalCashInvested)],
+      ];
+      document.getElementById('costSummary').innerHTML = rows.map(([l, v]) => `
+        <div class="cost-row"><span>${l}</span><span>${v}</span></div>`).join('');
+    }
+
+    recalc();
+  </script>
+</body>
+</html>
