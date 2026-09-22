@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Flip Logic</title>
+  <!-- flip-logic-mobile-v2 -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -21,18 +22,18 @@
     button, .btn{font:inherit;cursor:pointer;border-radius:8px;border:1px solid transparent;padding:10px 14px;font-weight:700;font-size:13px}
     .btn-accent{background:var(--accent);color:var(--primary)}
     .btn-ghost{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.2)}
-    .agent{margin-top:14px;background:#fff;color:var(--text);border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:center;border:1px solid rgba(212,175,55,.35);flex-wrap:wrap}
-    .avatar{width:52px;height:52px;border-radius:50%;background:var(--primary);color:var(--accent);display:grid;place-items:center;font-weight:800;flex:0 0 auto}
-    .agent-info{flex:1 1 160px;min-width:0}
+    .agent{margin-top:14px;background:#fff;color:var(--text);border-radius:12px;padding:12px 14px;display:flex;gap:12px 14px;align-items:center;border:1px solid rgba(212,175,55,.35);flex-wrap:wrap}
+    .avatar{width:52px;height:52px;border-radius:50%;background:var(--primary);color:var(--accent);display:grid;place-items:center;font-weight:800;flex:0 0 52px}
+    .agent-info{flex:1 1 140px;min-width:0}
     .agent-info .name{font-weight:800;color:var(--primary)}
     .agent-info .role{color:var(--accent);font-weight:700;font-size:13px;line-height:1.35}
-    .agent-contact{text-align:right;flex:0 1 auto;min-width:0}
-    .agent a{color:var(--muted);text-decoration:none;font-weight:600;font-size:13px;display:inline-block;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
-    @media (max-width:640px){
+    .agent-contact{margin-left:auto;text-align:right;flex:0 1 auto;max-width:100%;min-width:0}
+    .agent a{color:var(--muted);text-decoration:none;font-weight:600;font-size:13px;display:block;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
+    @media (max-width:720px){
       .agent{align-items:flex-start}
-      .agent-info{flex:1 1 calc(100% - 64px)}
-      .agent-contact{flex:1 1 100%;text-align:left;padding-left:64px}
-      .agent-contact a{font-size:12px}
+      .agent-info{flex:1 1 calc(100% - 66px)}
+      .agent-contact{flex:1 1 100%;margin-left:0;text-align:left;padding-left:66px;padding-top:2px}
+      .agent-contact a{font-size:12px;line-height:1.45}
       .brand h1{font-size:22px}
       .actions{width:100%}
     }
