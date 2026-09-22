@@ -64,10 +64,10 @@
   <div id="authGate" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1A3A52,#0F2744);padding:24px">
     <div style="max-width:420px;width:100%;background:#fff;border-radius:16px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.25);text-align:center">
       <div style="font-size:28px;font-weight:800;color:#1A3A52;margin-bottom:6px">Flip <span style="color:#D4AF37">Logic</span></div>
-      <p style="color:#6B7280;margin:0 0 20px;font-size:14px">Sign in with a Gmail account to continue.</p>
+      <p style="color:#6B7280;margin:0 0 20px;font-size:14px">Sign in with Google to continue.</p>
       <button id="googleSignIn" type="button" style="width:100%;padding:12px 16px;border:0;border-radius:10px;background:#1A3A52;color:#fff;font-weight:700;font-size:15px;cursor:pointer">Sign in with Google</button>
       <p id="authMsg" style="color:#DC2626;font-size:13px;font-weight:600;margin-top:14px;display:none"></p>
-      <p style="color:#9CA3AF;font-size:11px;margin-top:18px">Gmail accounts only (@gmail.com)</p>
+      <p style="color:#9CA3AF;font-size:11px;margin-top:18px">Secured with Google sign-in</p>
     </div>
   </div>
   <div id="appShell" style="display:none">
@@ -276,7 +276,7 @@
       verdict.innerHTML=`<h3>${pass?'75% RULE — DEAL PASSES':'75% RULE — OVER TARGET'}</h3>
         <p>${pass?'All-in costs are at or below 75% of ARV.':'All-in costs exceed 75% of ARV. Cut purchase or rehab.'}</p>
         <div class="stats">
-          <div class="stat"><div class="k">All-In</div><div class="v">${money(allIn)}</div></div>
+          <div class="stat"><div class="k">All-In</div><div class="v ${pass?'green':'red'}">${money(allIn)}</div></div>
           <div class="stat"><div class="k">% of ARV</div><div class="v ${pass?'green':'red'}">${(arvPct*100).toFixed(1)}%</div></div>
           <div class="stat"><div class="k">Max Offer @ 75%</div><div class="v gold">${money(maxOffer)}</div></div>
           <div class="stat"><div class="k">${spread>=0?'Room Below Max':'Over Max By'}</div><div class="v ${spread>=0?'green':'red'}">${money(Math.abs(spread))}</div></div>
@@ -329,7 +329,7 @@
       document.getElementById('costSummary').innerHTML=rows.map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted)">${k}</span><strong style="font-family:JetBrains Mono,monospace">${v}</strong></div>`).join('');
     }
 
-    // --- Auth (Supabase + Google, Gmail-only) ---
+    // --- Auth (Supabase + Google) ---
     const SUPABASE_URL = window.FLIPLOGIC_SUPABASE_URL || localStorage.getItem('fliplogic_supabase_url') || '';
     const SUPABASE_ANON_KEY = window.FLIPLOGIC_SUPABASE_ANON_KEY || localStorage.getItem('fliplogic_supabase_anon') || '';
     let supabaseClient = null;
@@ -339,12 +339,6 @@
       if(!el) return;
       el.style.display = msg ? 'block' : 'none';
       el.textContent = msg || '';
-    }
-
-    function isGmail(email){
-      if(!email) return false;
-      const e = String(email).trim().toLowerCase();
-      return e.endsWith('@gmail.com') || e.endsWith('@googlemail.com');
     }
 
     function showApp(show){
@@ -365,13 +359,6 @@
       }
       const { data: { session } } = await supabaseClient.auth.getSession();
       if(!session){
-        showApp(false);
-        return null;
-      }
-      const email = session.user && session.user.email;
-      if(!isGmail(email)){
-        showAuthMsg('Access denied. Gmail accounts only.');
-        await supabaseClient.auth.signOut();
         showApp(false);
         return null;
       }
@@ -411,13 +398,6 @@
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         supabaseClient.auth.onAuthStateChange((_event, session) => {
           if(!session){ showApp(false); return; }
-          const email = session.user && session.user.email;
-          if(!isGmail(email)){
-            showAuthMsg('Access denied. Gmail accounts only.');
-            supabaseClient.auth.signOut();
-            showApp(false);
-            return;
-          }
           showApp(true);
           showAuthMsg('');
         });
