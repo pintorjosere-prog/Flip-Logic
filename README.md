@@ -2,7 +2,7 @@
 
 Run the numbers. Win the deal.
 
-A single-page fix & flip deal analyzer for residential real estate. Enter a property's purchase
+A single-page fix & flip (and wholesale) deal analyzer for residential real estate. Enter a property's purchase
 price, rehab budget and after-repair value, and it tells you whether the deal clears the 75% rule
 and what you'd actually walk away with.
 
@@ -37,6 +37,13 @@ annual Interest Rate, Closing Costs to Buy
 **Outputs** — 75% rule verdict, Total Costs, Net Profit and ROI, plus a print/export view for
 sharing with a client or partner.
 
+
+**Wholesale mode** — Toggle Flip / Wholesale. Wholesale shows Buyer MAO, Offer to Seller,
+assignment fee as % of ARV, and end-buyer profit guidance.
+
+**Share Link / Export PDF** — Copy a read-only share URL that restores the deal numbers, or
+export a cleaner print/PDF report for clients and buyers.
+
 ## Running it locally
 
 No build step, no dependencies, no server. Clone the repo and open `index.html` in any browser:
@@ -47,8 +54,9 @@ cd Flip-Logic
 start index.html
 ```
 
-Everything runs in the browser. Nothing you type is uploaded, stored on a server, or shared —
-the only outbound request the page makes is to Google Fonts for typography.
+Everything runs in the browser. Deal numbers stay on your device unless you copy a Share Link
+(which encodes the inputs in the URL for the recipient). The only outbound request the page
+makes on its own is to Google Fonts for typography.
 
 ## Notes
 
