@@ -58,6 +58,10 @@
       .card{break-inside:avoid}
     }
   </style>
+    <script>
+    window.FLIPLOGIC_SUPABASE_URL = 'https://upuhrwpdlfavnpfzdjrc.supabase.co';
+    window.FLIPLOGIC_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwdWhyd3BkbGZhdm5wZnpkanJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwNzE1MjksImV4cCI6MjEwNDY0NzUyOX0.0qG62Zgh4YtgBHCp-fQztpncihnh_E_Bl9bgKm7qoZY';
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -276,7 +280,7 @@
       verdict.innerHTML=`<h3>${pass?'75% RULE — DEAL PASSES':'75% RULE — OVER TARGET'}</h3>
         <p>${pass?'All-in costs are at or below 75% of ARV.':'All-in costs exceed 75% of ARV. Cut purchase or rehab.'}</p>
         <div class="stats">
-          <div class="stat"><div class="k">All-In</div><div class="v ${pass?'green':'red'}">${money(allIn)}</div></div>
+          <div class="stat"><div class="k">All-In</div><div class="v">${money(allIn)}</div></div>
           <div class="stat"><div class="k">% of ARV</div><div class="v ${pass?'green':'red'}">${(arvPct*100).toFixed(1)}%</div></div>
           <div class="stat"><div class="k">Max Offer @ 75%</div><div class="v gold">${money(maxOffer)}</div></div>
           <div class="stat"><div class="k">${spread>=0?'Room Below Max':'Over Max By'}</div><div class="v ${spread>=0?'green':'red'}">${money(Math.abs(spread))}</div></div>
@@ -329,6 +333,7 @@
       document.getElementById('costSummary').innerHTML=rows.map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted)">${k}</span><strong style="font-family:JetBrains Mono,monospace">${v}</strong></div>`).join('');
     }
 
+    
     // --- Auth (Supabase + Google) ---
     const SUPABASE_URL = window.FLIPLOGIC_SUPABASE_URL || localStorage.getItem('fliplogic_supabase_url') || '';
     const SUPABASE_ANON_KEY = window.FLIPLOGIC_SUPABASE_ANON_KEY || localStorage.getItem('fliplogic_supabase_anon') || '';
