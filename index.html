@@ -4,10 +4,427 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Flip Logic</title>
-  <style>body{font-family:system-ui,sans-serif;margin:0;background:#f9fafb;color:#1f2937}header{background:#1a3a52;color:#fff;padding:24px;text-align:center}main{max-width:760px;margin:32px auto;padding:24px;background:#fff;border-radius:12px}.avatar{width:120px;height:120px;border-radius:50%;object-fit:cover}h1 span{color:#d4af37}</style>
+  <!-- flip-logic-mobile-v2 avatar-v1 -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#F9FAFB; --surface:#fff; --surface2:#F3F4F6; --border:#E5E7EB;
+      --text:#1F2937; --muted:#6B7280; --accent:#D4AF37; --primary:#1A3A52;
+      --green:#16A34A; --red:#DC2626; --radius:12px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.45}
+    .wrap{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+    header{background:linear-gradient(135deg,var(--primary),#0F2744);color:#fff;border-bottom:3px solid var(--accent);padding:22px 16px;margin-bottom:18px}
+    .brand{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .brand h1{font-size:26px;font-weight:800}.brand h1 span{color:var(--accent)}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    button, .btn{font:inherit;cursor:pointer;border-radius:8px;border:1px solid transparent;padding:10px 14px;font-weight:700;font-size:13px}
+    .btn-accent{background:var(--accent);color:var(--primary)}
+    .btn-ghost{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.2)}
+    .agent{margin-top:14px;background:#fff;color:var(--text);border-radius:12px;padding:12px 14px;display:flex;gap:12px 14px;align-items:center;border:1px solid rgba(212,175,55,.35);flex-wrap:wrap}
+    .avatar{width:52px;height:52px;border-radius:50%;background:var(--primary);color:var(--accent);display:grid;place-items:center;font-weight:800;flex:0 0 52px;object-fit:cover}
+    .agent-info{flex:1 1 140px;min-width:0}
+    .agent-info .name{font-weight:800;color:var(--primary)}
+    .agent-info .role{color:var(--accent);font-weight:700;font-size:13px;line-height:1.35}
+    .agent-contact{margin-left:auto;text-align:right;flex:0 1 auto;max-width:100%;min-width:0}
+    .agent a{color:var(--muted);text-decoration:none;font-weight:600;font-size:13px;display:block;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
+    @media (max-width:720px){
+      .agent{align-items:flex-start}
+      .agent-info{flex:1 1 calc(100% - 66px)}
+      .agent-contact{flex:1 1 100%;margin-left:0;text-align:left;padding-left:66px;padding-top:2px}
+      .agent-contact a{font-size:12px;line-height:1.45}
+      .brand h1{font-size:22px}
+      .actions{width:100%}
+    }
+    .mode{display:flex;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:8px;margin-bottom:14px}
+    .mode button{flex:1;background:transparent;color:var(--muted)}
+    .mode button.active{background:var(--primary);color:#fff}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:0 1px 3px rgba(26,58,82,.05)}
+    .card h2{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--primary);border-bottom:2px solid rgba(212,175,55,.25);padding-bottom:10px;margin-bottom:14px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+    label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+    .field{display:flex;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+    .field span{padding:0 10px;color:var(--accent);font-weight:800;background:var(--surface2);align-self:stretch;display:flex;align-items:center}
+    .field input{flex:1;border:0;background:transparent;padding:12px 10px;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:15px;outline:none;min-width:0;color:var(--text)}
+    .verdict{border-radius:12px;padding:18px;margin-bottom:14px;border:1px solid}
+    .verdict.pass{background:#F0FDF4;border-color:#BBF7D0}.verdict.fail{background:#FEF2F2;border-color:#FECACA}
+    .verdict h3{font-size:20px;margin-bottom:6px}.verdict.pass h3{color:var(--green)}.verdict.fail h3{color:var(--red)}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}
+    .stat{background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px}
+    .stat .k{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+    .stat .v{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:18px;margin-top:4px}
+    .gold{color:var(--accent)}.green{color:var(--green)}.red{color:var(--red)}
+    table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:13px}
+    th,td{padding:10px 8px;text-align:right;border-bottom:1px solid var(--border)}
+    th{font-size:10px;text-transform:uppercase;color:var(--muted)}
+    tr.hi{background:rgba(212,175,55,.08)}
+    .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:12px 16px;border-radius:8px;font-weight:600;display:none;z-index:20}
+    .toast.show{display:block}
+    .banner{display:none;background:#FFF8E7;border:1px solid rgba(212,175,55,.4);padding:10px 12px;border-radius:8px;margin-bottom:12px;font-weight:600;font-size:13px;color:var(--primary)}
+    body.report .no-report{display:none!important}
+    body.report .banner{display:block}
+    @media print{
+      header{border-bottom:2px solid var(--accent)}
+      .no-print,.mode,.toast,.banner{display:none!important}
+      body{background:#fff}
+      .card{break-inside:avoid}
+    }
+  </style>
+    <script>
+    window.FLIPLOGIC_SUPABASE_URL = 'https://upuhrwpdlfavnpfzdjrc.supabase.co';
+    window.FLIPLOGIC_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwdWhyd3BkbGZhdm5wZnpkanJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwNzE1MjksImV4cCI6MjEwNDY0NzUyOX0.0qG62Zgh4YtgBHCp-fQztpncihnh_E_Bl9bgKm7qoZY';
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<header><h1>Flip <span>Logic</span></h1><img class="avatar" src="avatar.jpg" alt="Jose Pintor" width="120" height="120" /><h2>Jose Pintor</h2><p>Investor · RE Agent · eXp Realty</p></header>
-<main><p>Run the numbers. Win the deal.</p><p><a href="tel:6366757113">(636) 675-7113</a></p><p><a href="mailto:jose.pintormendoza@exprealty.com">jose.pintormendoza@exprealty.com</a></p></main>
+  <div id="authGate" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1A3A52,#0F2744);padding:24px">
+    <div style="max-width:420px;width:100%;background:#fff;border-radius:16px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.25);text-align:center">
+      <div style="font-size:28px;font-weight:800;color:#1A3A52;margin-bottom:6px">Flip <span style="color:#D4AF37">Logic</span></div>
+      <p style="color:#6B7280;margin:0 0 20px;font-size:14px">Sign in with Google to continue.</p>
+      <button id="googleSignIn" type="button" style="width:100%;padding:12px 16px;border:0;border-radius:10px;background:#1A3A52;color:#fff;font-weight:700;font-size:15px;cursor:pointer">Sign in with Google</button>
+      <p id="authMsg" style="color:#DC2626;font-size:13px;font-weight:600;margin-top:14px;display:none"></p>
+      <p style="color:#9CA3AF;font-size:11px;margin-top:18px">Secured with Google sign-in</p>
+    </div>
+  </div>
+  <div id="appShell" style="display:none">
+
+  <header>
+    <div class="wrap" style="padding-bottom:0;padding-top:0">
+      <div class="brand">
+        <h1>Flip <span>Logic</span></h1>
+        <div class="actions no-print">
+          <button class="btn-ghost" type="button" id="signOutBtn">Sign out</button>
+          <button class="btn-accent" type="button" onclick="copyShareLink()">Share Link</button>
+          <button class="btn-ghost" type="button" onclick="exportReport()">Export PDF</button>
+        </div>
+      </div>
+      <p style="opacity:.8;margin:10px 0 12px;font-style:italic">Run the numbers. Win the deal.</p>
+      <div class="agent">
+        <img class="avatar" src="avatar.jpg" alt="Jose Pintor" width="52" height="52" />
+        <div class="agent-info">
+          <div class="name">Jose Pintor</div>
+          <div class="role">Investor · RE Agent · eXp Realty</div>
+        </div>
+        <div class="agent-contact">
+          <div><a href="tel:6366757113">(636) 675-7113</a></div>
+          <div><a href="mailto:jose.pintormendoza@exprealty.com">jose.pintormendoza@exprealty.com</a></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="banner" id="reportBanner">Shared deal report · read-only view</div>
+
+    <div class="mode no-report no-print" role="group" aria-label="Deal mode">
+      <button type="button" class="active" id="modeFlip" onclick="setMode('flip')">Flip</button>
+      <button type="button" id="modeWholesale" onclick="setMode('wholesale')">Wholesale</button>
+    </div>
+
+    <div id="verdict" class="verdict pass"></div>
+
+    <div class="card" id="wholesaleCard" style="display:none">
+      <h2>Wholesale Breakdown</h2>
+      <div class="grid no-report" style="margin-bottom:12px">
+        <div>
+          <label>Assignment Fee</label>
+          <div class="field"><span>$</span><input id="assignmentFee" type="number" value="10000" step="500" oninput="recalc()" /></div>
+        </div>
+        <div>
+          <label>End Buyer Min Profit %</label>
+          <div class="field"><input id="buyerProfitPct" type="number" value="30" step="1" oninput="recalc()" /><span>%</span></div>
+        </div>
+        <div>
+          <label>Buyer Rule (% of ARV)</label>
+          <div class="field"><input id="buyerRulePct" type="number" value="70" step="1" oninput="recalc()" /><span>%</span></div>
+        </div>
+      </div>
+      <div class="stats" id="wholesaleStats"></div>
+    </div>
+
+    <div class="card no-report">
+      <h2>Deal Inputs</h2>
+      <div class="grid">
+        <div style="grid-column:1/-1">
+          <label>Property Address</label>
+          <div class="field"><input id="address" type="text" value="" placeholder="123 Main St, City, ST" oninput="recalc()" /></div>
+        </div>
+        <div><label>Purchase Price</label><div class="field"><span>$</span><input id="purchasePrice" type="number" value="207000" step="1000" oninput="recalc()" /></div></div>
+        <div><label>Rehab Budget</label><div class="field"><span>$</span><input id="rehabBudget" type="number" value="81490" step="1000" oninput="recalc()" /></div></div>
+        <div><label>After Repair Value (ARV)</label><div class="field"><span>$</span><input id="arv" type="number" value="390000" step="1000" oninput="recalc()" /></div></div>
+        <div><label>Insurance / mo</label><div class="field"><span>$</span><input id="insurance" type="number" value="195" step="25" oninput="recalc()" /></div></div>
+        <div><label>Taxes / mo</label><div class="field"><span>$</span><input id="taxes" type="number" value="650" step="50" oninput="recalc()" /></div></div>
+        <div><label>Closing Costs Buy %</label><div class="field"><input id="closingBuyPct" type="number" value="3.5" step="0.25" oninput="recalc()" /><span>%</span></div></div>
+        <div><label>Down Payment</label><div class="field"><span>$</span><input id="downPayment" type="number" value="10350" step="500" oninput="recalc()" /></div></div>
+        <div><label>Earnest Money (EMD)</label><div class="field"><span>$</span><input id="emd" type="number" value="5000" step="500" oninput="recalc()" /></div></div>
+      </div>
+    </div>
+
+    <div class="card no-report">
+      <h2>Rate Settings</h2>
+      <div class="grid">
+        <div><label>Origination Fees</label><div class="field"><input id="originationRate" type="number" value="2" step="0.25" oninput="recalc()" /><span>%</span></div></div>
+        <div><label>Interest Rate (Annual)</label><div class="field"><input id="interestRate" type="number" value="12" step="0.25" oninput="recalc()" /><span>%</span></div></div>
+        <div><label>Seller Commission</label><div class="field"><input id="commissionRate" type="number" value="6" step="0.25" oninput="recalc()" /><span>%</span></div></div>
+        <div><label>Closing Costs Sell</label><div class="field"><input id="closingSellPct" type="number" value="2" step="0.25" oninput="recalc()" /><span>%</span></div></div>
+      </div>
+    </div>
+
+    <div class="card"><h2>Hard Money / Cash Snapshot</h2><div class="stats" id="loanStats"></div></div>
+    <div class="card"><h2>12-Month Hold Schedule</h2>
+      <div style="overflow:auto">
+        <table>
+          <thead><tr><th>Month</th><th>Monthly Hold</th><th>Cum Hold</th><th>Total Costs</th><th>Net Profit</th><th>ROI</th></tr></thead>
+          <tbody id="scheduleBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card"><h2>Projected Net Profit</h2><div class="stats" id="profitSummary"></div></div>
+    <div class="card"><h2>Key Deal Indicators</h2><div id="indicators"></div></div>
+    <div class="card"><h2>Cost Summary</h2><div id="costSummary"></div></div>
+  </div>
+
+  </div><!-- /appShell -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let dealMode = 'flip';
+    const FIELDS = ['address','purchasePrice','rehabBudget','arv','insurance','taxes','closingBuyPct','downPayment','emd','originationRate','interestRate','commissionRate','closingSellPct','assignmentFee','buyerProfitPct','buyerRulePct'];
+
+    function money(n){
+      const a=Math.abs(n||0);
+      const s='$' + a.toLocaleString('en-US',{maximumFractionDigits:0});
+      return n<0?'('+s+')':s;
+    }
+    function pct(n){return (n*100).toFixed(2)+'%'}
+    function val(id){return parseFloat(document.getElementById(id).value)||0}
+    function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+
+    function setMode(mode){
+      dealMode = mode==='wholesale'?'wholesale':'flip';
+      document.getElementById('modeFlip').classList.toggle('active', dealMode==='flip');
+      document.getElementById('modeWholesale').classList.toggle('active', dealMode==='wholesale');
+      document.getElementById('wholesaleCard').style.display = dealMode==='wholesale'?'block':'none';
+      recalc();
+    }
+
+    function collectState(){
+      const s={v:1,mode:dealMode};
+      FIELDS.forEach(id=>{const el=document.getElementById(id); if(el) s[id]=el.value});
+      return s;
+    }
+    function applyState(s){
+      if(!s) return;
+      FIELDS.forEach(id=>{if(s[id]!=null && document.getElementById(id)) document.getElementById(id).value=s[id]});
+      setMode(s.mode||'flip');
+    }
+    function encodeState(s){
+      const bytes=new TextEncoder().encode(JSON.stringify(s));
+      let bin=''; bytes.forEach(b=>bin+=String.fromCharCode(b));
+      return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+    }
+    function decodeState(str){
+      try{
+        const b64=str.replace(/-/g,'+').replace(/_/g,'/');
+        const pad=b64+'='.repeat((4-(b64.length%4))%4);
+        const bin=atob(pad);
+        const bytes=Uint8Array.from(bin,c=>c.charCodeAt(0));
+        return JSON.parse(new TextDecoder().decode(bytes));
+      }catch(e){return null}
+    }
+    function buildShareUrl(){
+      const u=new URL(location.href); u.hash='';
+      u.searchParams.set('d', encodeState(collectState()));
+      u.searchParams.set('view','report');
+      return u.toString();
+    }
+    async function copyShareLink(){
+      const link=buildShareUrl();
+      try{await navigator.clipboard.writeText(link); toast('Share link copied')}
+      catch(e){prompt('Copy share link:', link)}
+    }
+    function exportReport(){
+      const had=document.body.classList.contains('report');
+      document.body.classList.add('report');
+      window.print();
+      setTimeout(()=>{ if(!had && new URLSearchParams(location.search).get('view')!=='report') document.body.classList.remove('report'); },400);
+    }
+    function loadFromUrl(){
+      const p=new URLSearchParams(location.search);
+      const st=decodeState(p.get('d')||'');
+      if(st) applyState(st);
+      if(p.get('view')==='report') document.body.classList.add('report');
+    }
+
+    function recalc(){
+      const purchase=val('purchasePrice'), rehab=val('rehabBudget'), arv=val('arv');
+      const insurance=val('insurance'), taxes=val('taxes'), emd=val('emd');
+      const closingBuyPct=val('closingBuyPct')/100;
+      const down=val('downPayment');
+      const orig=val('originationRate')/100, rate=val('interestRate')/100;
+      const commission=val('commissionRate')/100, sellClose=val('closingSellPct')/100;
+      const closingBuy=purchase*closingBuyPct;
+      const loan=Math.max(0, purchase+rehab-down-emd);
+      const origFee=loan*orig;
+      const monthlyInterest=(loan*rate)/12;
+      const sellerComm=arv*commission;
+      const closingSell=arv*sellClose;
+      const cashIn=down+emd+closingBuy;
+      const fixed=down+emd+loan+origFee+closingBuy+closingSell+sellerComm;
+      const monthlyHold=monthlyInterest+insurance+taxes;
+
+      const schedule=Array.from({length:12},(_,i)=>{
+        const months=i+1;
+        const hold=monthlyHold*months;
+        const total=fixed+hold;
+        const profit=arv-total;
+        const roi=cashIn>0?profit/cashIn:0;
+        return {months, hold, total, profit, roi, monthlyHold};
+      });
+
+      const allIn=purchase+rehab;
+      const arvPct=arv>0?allIn/arv:0;
+      const maxOffer=Math.max(0, arv*0.75-rehab);
+      const pass=arvPct<=0.75;
+      const spread=maxOffer-purchase;
+      const verdict=document.getElementById('verdict');
+      verdict.className='verdict '+(pass?'pass':'fail');
+      verdict.innerHTML=`<h3>${pass?'75% RULE — DEAL PASSES':'75% RULE — OVER TARGET'}</h3>
+        <p>${pass?'All-in costs are at or below 75% of ARV.':'All-in costs exceed 75% of ARV. Cut purchase or rehab.'}</p>
+        <div class="stats">
+          <div class="stat"><div class="k">All-In</div><div class="v">${money(allIn)}</div></div>
+          <div class="stat"><div class="k">% of ARV</div><div class="v ${pass?'green':'red'}">${(arvPct*100).toFixed(1)}%</div></div>
+          <div class="stat"><div class="k">Max Offer @ 75%</div><div class="v gold">${money(maxOffer)}</div></div>
+          <div class="stat"><div class="k">${spread>=0?'Room Below Max':'Over Max By'}</div><div class="v ${spread>=0?'green':'red'}">${money(Math.abs(spread))}</div></div>
+        </div>`;
+
+      // Wholesale
+      const fee=val('assignmentFee');
+      const buyerRule=val('buyerRulePct')/100;
+      const buyerProfitTarget=val('buyerProfitPct')/100;
+      const buyerMao=Math.max(0, arv*buyerRule-rehab);
+      const offerSeller=Math.max(0, buyerMao-fee);
+      const feePct=arv>0?fee/arv:0;
+      const leftover=Math.max(0, arv-rehab-buyerMao);
+      document.getElementById('wholesaleStats').innerHTML=[
+        ['Buyer MAO', money(buyerMao), `ARV × ${(buyerRule*100).toFixed(0)}% − rehab`, 'gold'],
+        ['Offer to Seller', money(offerSeller), 'Buyer MAO − assignment fee', 'gold'],
+        ['Your Assignment Fee', money(fee), `${(feePct*100).toFixed(1)}% of ARV`, ''],
+        ['Buyer Leftover to ARV', money(leftover), 'After rehab at MAO', ''],
+        ['Contract vs Offer Gap', money(purchase-offerSeller), purchase>offerSeller?'Purchase above wholesale offer':'Room under purchase', purchase>offerSeller?'red':''],
+        ['Buyer Profit Target', (buyerProfitTarget*100).toFixed(0)+'%', 'Conversation guide', '']
+      ].map(([k,v,s,c])=>`<div class="stat"><div class="k">${k}</div><div class="v ${c}">${v}</div><div class="k" style="margin-top:4px;text-transform:none;letter-spacing:0">${s}</div></div>`).join('');
+
+      document.getElementById('loanStats').innerHTML=[
+        ['Down Payment', money(down)],['EMD', money(emd)],['Loan Amount', money(loan)],
+        ['Origination Fee', money(origFee)],['Monthly Interest', money(monthlyInterest)],
+        ['Seller Commission', money(sellerComm)],['Cash Out of Pocket', money(cashIn)],
+        ['3-Mo Carry + Orig', money(monthlyHold*3+origFee)],['6-Mo Carry + Orig', money(monthlyHold*6+origFee)]
+      ].map(([k,v])=>`<div class="stat"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+
+      document.getElementById('scheduleBody').innerHTML=schedule.map(r=>{
+        const hi=r.months===6||r.months===12;
+        return `<tr class="${hi?'hi':''}"><td>${r.months}${hi?' ★':''}</td><td>${money(r.monthlyHold)}</td><td>${money(r.hold)}</td><td>${money(r.total)}</td><td class="${r.profit>=0?'green':'red'}">${money(r.profit)}</td><td class="${r.roi>=0?'green':'red'}">${pct(r.roi)}</td></tr>`;
+      }).join('');
+
+      document.getElementById('profitSummary').innerHTML=[3,6,9,12].map(m=>{
+        const r=schedule[m-1];
+        return `<div class="stat"><div class="k">${m} months</div><div class="v ${r.profit>=0?'green':'red'}">${money(r.profit)}</div><div class="k" style="margin-top:4px;text-transform:none">${pct(r.roi)} ROI</div></div>`;
+      }).join('');
+
+      const six=schedule[5], twelve=schedule[11];
+      const inds=[
+        ['75% Rule', pass, (arvPct*100).toFixed(1)+'%'],
+        ['Break-even by 12 months', twelve.profit>=-5000, money(twelve.profit)],
+        ['ROI > 15% at 6 months', six.roi>0.15, pct(six.roi)],
+        ['6-mo profit ≥ 50% of rehab', six.profit>=rehab*0.5, six.profit>0?pct(six.profit/rehab):'N/A']
+      ];
+      document.getElementById('indicators').innerHTML=inds.map(([l,ok,d])=>`<div style="display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:8px;margin-bottom:8px;border:1px solid ${ok?'#BBF7D0':'#FECACA'};background:${ok?'#F0FDF4':'#FEF2F2'}"><div>${ok?'✅':'❌'} ${l}</div><strong class="${ok?'green':'red'}">${d}</strong></div>`).join('');
+
+      const rows=[['Purchase Price',money(purchase)],['Rehab Budget',money(rehab)],['Down Payment',money(down)],['EMD',money(emd)],['Loan Amount',money(loan)],['Origination',money(origFee)],['Buy Closing',money(closingBuy)],['Sell Closing',money(closingSell)],['Commission',money(sellerComm)],['Monthly Holding',money(monthlyHold)+'/mo'],['Cash Out of Pocket',money(cashIn)]];
+      document.getElementById('costSummary').innerHTML=rows.map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted)">${k}</span><strong style="font-family:JetBrains Mono,monospace">${v}</strong></div>`).join('');
+    }
+
+    
+    // --- Auth (Supabase + Google) ---
+    const SUPABASE_URL = window.FLIPLOGIC_SUPABASE_URL || localStorage.getItem('fliplogic_supabase_url') || '';
+    const SUPABASE_ANON_KEY = window.FLIPLOGIC_SUPABASE_ANON_KEY || localStorage.getItem('fliplogic_supabase_anon') || '';
+    let supabaseClient = null;
+
+    function showAuthMsg(msg){
+      const el = document.getElementById('authMsg');
+      if(!el) return;
+      el.style.display = msg ? 'block' : 'none';
+      el.textContent = msg || '';
+    }
+
+    function showApp(show){
+      const gate = document.getElementById('authGate');
+      const shell = document.getElementById('appShell');
+      if(gate) gate.style.display = show ? 'none' : 'flex';
+      if(shell) shell.style.display = show ? 'block' : 'none';
+    }
+
+    async function enforceSession(){
+      if(!SUPABASE_URL || !SUPABASE_ANON_KEY || !window.supabase){
+        showAuthMsg('Auth is not configured yet. Missing Supabase URL or anon key.');
+        showApp(false);
+        return null;
+      }
+      if(!supabaseClient){
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if(!session){
+        showApp(false);
+        return null;
+      }
+      showApp(true);
+      showAuthMsg('');
+      return session;
+    }
+
+    async function signInWithGoogle(){
+      showAuthMsg('');
+      if(!SUPABASE_URL || !SUPABASE_ANON_KEY){
+        showAuthMsg('Auth is not configured yet.');
+        return;
+      }
+      if(!supabaseClient){
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+      const redirectTo = window.location.origin + window.location.pathname;
+      const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo, queryParams: { access_type: 'offline', prompt: 'consent' } }
+      });
+      if(error) showAuthMsg(error.message || 'Google sign-in failed');
+    }
+
+    async function signOut(){
+      if(supabaseClient) await supabaseClient.auth.signOut();
+      showApp(false);
+    }
+
+    (function initAuth(){
+      const btn = document.getElementById('googleSignIn');
+      if(btn) btn.addEventListener('click', signInWithGoogle);
+      const out = document.getElementById('signOutBtn');
+      if(out) out.addEventListener('click', signOut);
+      if(window.supabase && SUPABASE_URL && SUPABASE_ANON_KEY){
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        supabaseClient.auth.onAuthStateChange((_event, session) => {
+          if(!session){ showApp(false); return; }
+          showApp(true);
+          showAuthMsg('');
+        });
+      }
+      enforceSession();
+    })();
+
+    loadFromUrl();
+    recalc();
+  </script>
 </body>
 </html>
