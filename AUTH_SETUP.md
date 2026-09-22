@@ -5,7 +5,7 @@ https://fliplogic.pages.dev
 (Fallback while Pages is pending: https://pintorjosere-prog.github.io/Flip-Logic/)
 
 ## Supabase project
-Name: Camrose-Portal
+Name: Real Estate AI
 Ref: upuhrwpdlfavnpfzdjrc
 URL: https://upuhrwpdlfavnpfzdjrc.supabase.co
 (Anon key is wired in index.html as FLIPLOGIC_SUPABASE_ANON_KEY.)
