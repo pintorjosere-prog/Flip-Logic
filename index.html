@@ -128,10 +128,6 @@
       <h2>Wholesale Breakdown</h2>
       <div class="grid no-report" style="margin-bottom:12px">
         <div>
-          <label>Assignment Fee</label>
-          <div class="field"><span>$</span><input id="assignmentFee" type="number" value="10000" step="500" oninput="recalc()" /></div>
-        </div>
-        <div>
           <label>End Buyer Min Profit %</label>
           <div class="field"><input id="buyerProfitPct" type="number" value="30" step="1" oninput="recalc()" /><span>%</span></div>
         </div>
@@ -190,7 +186,7 @@
 
   <script>
     let dealMode = 'flip';
-    const FIELDS = ['address','purchasePrice','rehabBudget','arv','insurance','taxes','closingBuyPct','downPayment','emd','originationRate','interestRate','commissionRate','closingSellPct','assignmentFee','buyerProfitPct','buyerRulePct'];
+    const FIELDS = ['address','purchasePrice','rehabBudget','arv','insurance','taxes','closingBuyPct','downPayment','emd','originationRate','interestRate','commissionRate','closingSellPct','buyerProfitPct','buyerRulePct'];
 
     function money(n){
       const a=Math.abs(n||0);
@@ -300,17 +296,14 @@
         </div>`;
 
       // Wholesale
-      const fee=val('assignmentFee');
       const buyerRule=val('buyerRulePct')/100;
       const buyerProfitTarget=val('buyerProfitPct')/100;
       const buyerMao=Math.max(0, arv*buyerRule-rehab);
-      const offerSeller=Math.max(0, buyerMao-fee);
-      const feePct=arv>0?fee/arv:0;
+      const offerSeller=buyerMao;
       const leftover=Math.max(0, arv-rehab-buyerMao);
       document.getElementById('wholesaleStats').innerHTML=[
         ['Buyer MAO', money(buyerMao), `ARV × ${(buyerRule*100).toFixed(0)}% − rehab`, 'gold'],
-        ['Offer to Seller', money(offerSeller), 'Buyer MAO − assignment fee', 'gold'],
-        ['Your Assignment Fee', money(fee), `${(feePct*100).toFixed(1)}% of ARV`, ''],
+        ['Offer to Seller', money(offerSeller), 'Same as buyer MAO', 'gold'],
         ['Buyer Leftover to ARV', money(leftover), 'After rehab at MAO', ''],
         ['Contract vs Offer Gap', money(purchase-offerSeller), purchase>offerSeller?'Purchase above wholesale offer':'Room under purchase', purchase>offerSeller?'red':''],
         ['Buyer Profit Target', (buyerProfitTarget*100).toFixed(0)+'%', 'Conversation guide', '']

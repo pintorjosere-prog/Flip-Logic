@@ -39,7 +39,7 @@ sharing with a client or partner.
 
 
 **Wholesale mode** — Toggle Flip / Wholesale. Wholesale shows Buyer MAO, Offer to Seller,
-assignment fee as % of ARV, and end-buyer profit guidance.
+and end-buyer profit guidance.
 
 **Share Link / Export PDF** — Copy a read-only share URL that restores the deal numbers, or
 export a cleaner print/PDF report for clients and buyers.
